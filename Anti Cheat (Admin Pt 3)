@@ -1,0 +1,34 @@
+local CheatBlocker = game.Workspace:WaitForChild("CheatBlocker")
+local EVENTS = CheatBlocker.EVENTS
+local VALUES = CheatBlocker.VALUES
+local SAVES = CheatBlocker.SAVES
+
+local plrs = game.Players
+local plr = plrs.LocalPlayer
+
+local enable = false
+
+EVENTS.MOVE.OnClientEvent:Connect(function(e)
+	if e == true then
+		enable = true
+	elseif e == false then
+		enable = false
+	end
+end)
+
+EVENTS.DETECT.OnClientEvent:Connect(function(msg)
+	local console = enable and script.Parent.hack_console.main.console or CheatBlocker.SAVES.hack_console.main.console
+	local newmessage = SAVES.message:Clone()
+
+	for _, child in ipairs(console:GetChildren()) do
+		if child:IsA("TextLabel") then
+			child.Position = child.Position + UDim2.new(0, 0, 0, 30)
+		end
+	end
+
+	newmessage.Parent = console
+	newmessage.Position = UDim2.new(0, 0, 0, 0)
+	newmessage.Text = msg
+
+	console.CanvasSize += UDim2.new(0, 0, 0, 30)
+end)
