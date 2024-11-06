@@ -1,0 +1,197 @@
+local Players = game:GetService("Players")
+
+local SETTINGS = require(script.Parent.Parent.SETTINGS)
+local MAX_SPEED = SETTINGS.Maximum_WalkSpeed
+local MAX_JUMP = SETTINGS.Maximum_JumpPower
+local MAX_AIR_TIME = SETTINGS.Maximum_Air_Time
+local DETECT_METHOD = SETTINGS.Detect_Method
+local ADMINS = SETTINGS.Admins
+local VALUES = script.Parent.Parent.VALUES
+local SAVES = script.Parent.Parent.SAVES
+local EVENTS = script.Parent.Parent.EVENTS
+
+
+local function isTouchingGround(root)
+	local ray = Ray.new(root.Position, Vector3.new(0, -5, 0))
+	local hit, _ = workspace:FindPartOnRayWithIgnoreList(ray, {root.Parent})
+
+	return hit ~= nil
+end
+
+local function isAdmin(playerName)
+	for _, v in pairs(ADMINS) do
+		if v == playerName then
+			return true
+		end
+	end
+	return false
+end
+
+
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function(character)
+		local success, result = pcall(function()
+
+		end)
+		task.wait()
+
+		local root = character:WaitForChild("HumanoidRootPart")
+		local lastXPosition = root.Position.X
+		local lastZPosition = root.Position.Z
+		local lastYPosition = root.Position.Y
+		local lastGroundPos = root.Position.Z
+		local lastPosition = root.Position
+		local lastTime = tick()
+		local timeInAir = 0
+		local timeInGround = 0
+		local lastJump = 0
+		local high = false
+
+
+		wait(3.5)
+
+		spawn(function()
+			while true do
+				task.wait()
+				if isTouchingGround(root) then
+					lastGroundPos = root.Position.Y
+				end
+			end
+		end)
+
+		while character.Parent do
+			task.wait(0.15)
+
+
+
+
+			-- Anti Teleport --
+			local distanceTravelled = (lastPosition - root.Position).Magnitude
+			if distanceTravelled > 15 then
+				if SETTINGS.Anti_Teleport == true then
+
+					if DETECT_METHOD == "back" then
+						root.Position = lastPosition
+					elseif DETECT_METHOD == "kick" then
+						player:Kick("[CheatBlocker] - You were kicked for teleporting.")
+					else
+						print(player.Name.." - [CheatBlocker] - Your detect method is not working for now, there is only kick/back.")
+					end
+
+					EVENTS.DETECT:FireClient(player, player.Name.." - Teleport Cheat Detected!")
+
+					if SETTINGS.Test_Mode == true then
+						warn(player.Name.." - [CheatBlocker TEST DETECT] - Teleport Cheat Detected!")
+					end
+
+				end
+			end
+
+			-- Anti JumpPower --
+			if isTouchingGround(root) then
+				timeInGround = timeInGround + 0.15
+			end
+			
+			if timeInGround < 1 then
+				
+			end
+			
+			
+			if not isTouchingGround(root) then
+				if lastYPosition > MAX_JUMP then
+					if SETTINGS.Anti_JumpPower == true then
+						if DETECT_METHOD == "back" then
+							root.Position = Vector3.new(lastPosition.X, lastGroundPos, lastPosition.Z)
+						elseif DETECT_METHOD == "kick" then
+							player:Kick("[CheatBlocker] - You were kicked for cheating.")
+						else
+							print(player.Name.." - [CheatBlocker] - Your detect method is not working for now, there is only kick/back.")
+						end
+					end
+
+					EVENTS.DETECT:FireClient(player, player.Name.." - JumpPower Cheat Detected!")
+
+					if SETTINGS.Test_Mode == true then
+						warn(player.Name.." - [CheatBlocker TEST DETECT] - JumpPower Cheat Detected!")
+						print(player.Name.." - [CheatBlocker TEST] - JumpPower: "..lastYPosition)
+					end
+				end
+
+			end
+			
+			lastYPosition = root.Position.Y
+			
+			
+			-- Anti Flight --
+			if not isTouchingGround(root) then
+				timeInAir = timeInAir + 0.15
+				timeInGround = 0
+			else
+				timeInAir = 0
+			end
+
+
+			if timeInAir >= MAX_AIR_TIME then
+				if SETTINGS.Anti_Flight == true then
+
+					if DETECT_METHOD == "back" then
+						root.Position = Vector3.new(lastPosition.X, lastGroundPos, lastPosition.Z)
+					elseif DETECT_METHOD == "kick" then
+						player:Kick("[CheatBlocker] - You were kicked for flying.")
+					else
+						print(player.Name.." - [CheatBlocker] - Your detect method is not working for now, there is only kick/back.")
+					end
+
+					EVENTS.DETECT:FireClient(player, player.Name.." - Flight Cheat Detected!")
+
+					if SETTINGS.Test_Mode == true then
+						warn(player.Name.." - [CheatBlocker TEST DETECT] - Flight Cheat Detected!")
+						print(player.Name.." - [CheatBlocker TEST]: your time in air: "..timeInAir)
+					end
+
+				end
+			end
+
+			-- Anti WalkSpeed --
+			local timeTaken = tick() - lastTime
+			local distanceMovedX = math.abs(lastXPosition - root.Position.X)
+			local distanceMovedZ = math.abs(lastZPosition - root.Position.Z)
+			local speed = (distanceMovedX + distanceMovedZ) / timeTaken
+
+
+			if speed > MAX_SPEED or speed < 0 then
+				if SETTINGS.Anti_WalkSpeed == true then
+
+					if DETECT_METHOD == "back" then
+						root.Position = lastPosition
+					elseif DETECT_METHOD == "kick" then
+						player:Kick("[CheatBlocker] - You were kicked for cheating.")
+					else
+						print(player.Name.." - [CheatBlocker] - Your detect method is not working for now, there is only kick/back and ban will added soon.")
+					end
+
+					EVENTS.DETECT:FireClient(player, player.Name.." - WalkSpeed Cheat Detected!")
+
+					if SETTINGS.Test_Mode == true then
+						warn(player.Name.." - [CheatBlocker TEST DETECT] - WalkSpeed Cheat Detected!")
+						print(player.Name.." - [CheatBlocker TEST]: your speed: "..speed)
+					end
+
+				end
+			end
+
+			lastPosition = root.Position
+			lastXPosition = root.Position.X
+			lastZPosition = root.Position.Z
+			lastTime = tick()
+		end
+
+		if not success then
+			if SETTINGS.Test_Mode == true then
+				warn(player.Name.." has error with Cheat Blocker, error: "..result)
+			end
+			
+			player:Kick("Cheat Blocker has error, we can't know if you are hacker or not, please rejoin the game.")
+		end
+	end)
+end)
