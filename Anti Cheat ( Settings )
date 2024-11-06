@@ -1,0 +1,52 @@
+local set = {
+	
+	
+	--[[
+	PLEASE ENABLE TEST MODE TO TEST HOW MUCH YOU REALLY WANT THING.
+	BECAUSE THE WALKSPEED FROM THE PLAYER IS NOT HOW MUCH THE WALKSPEED THAT THE CHEATBLOCKER DETECT.
+	]]
+	
+	
+	
+	
+	-- you can set here the admins in your server.
+	Admins = {
+		"Admin_Name1",
+		"Admin_Name2",
+    "Admin_Name3",
+    "Admin_Name4",
+	},
+	
+	
+	-- you can set the detect method to kick/ban/back --
+	-- the kick will kick the player when he cheating, the back make that he not able to do that, the ban for now is not working. --
+	Detect_Method = "kick",
+	
+	-- enable if you want it to print all the things it detect.
+	Test_Mode = true,
+	
+	
+	-- you can set the maximum walkspeed that player can get and the minimum.
+	Maximum_WalkSpeed = 31,
+	
+	-- How much time you can be in the air, its for anti flight but if your max jumppower is
+	-- too much then you can stuck in the air because of the anti flight so test it and change it
+	Maximum_Air_Time = 5,
+	
+	-- disable/enable anti walkspeed.
+	Anti_WalkSpeed = true,
+	
+	-- you can set the maximum jumppower that player can get and the minimum.
+	Maximum_JumpPower = 60,
+	
+	-- disable/enable anti jumppower.
+	Anti_JumpPower = true,
+	
+	
+	-- disable/enable anti fly.
+	Anti_Flight = true,
+	
+	-- disable/enable anti teleport.
+	Anti_Teleport = true,
+	
+}
