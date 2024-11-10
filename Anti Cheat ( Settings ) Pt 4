@@ -13,8 +13,8 @@ local set = {
 	Admins = {
 		"Admin_Name1",
 		"Admin_Name2",
-    "Admin_Name3",
-    "Admin_Name4",
+    		"Admin_Name3",
+   		"Admin_Name4",
 	},
 	
 	
